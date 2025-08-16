@@ -1,0 +1,316 @@
+<!DOCTYPE html><html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium हिंदी रूट फाइंडर — Google Maps Directions + Places</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#0f1734;--panel2:#0c142e;--text:#e9edf8;--muted:#9fb0e3;--accent:#6aa3ff;--green:#58e3c1;--amber:#ffd166;--red:#ff6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+    header{padding:16px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:linear-gradient(180deg, rgba(15,23,42,.9), rgba(15,23,42,.65));backdrop-filter: blur(6px);z-index:10}
+    .wrap{max-width:1300px;margin:0 auto}
+    .title{font-weight:800;font-size:clamp(18px,3vw,26px)}
+    .sub{color:var(--muted);font-size:14px;margin-top:4px}
+    .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;padding:16px}
+    @media (max-width:1100px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .input{flex:1;min-width:220px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:var(--panel2);color:var(--text);outline:none}
+    .btn{padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,#1b254b,#151d3b);color:var(--text);cursor:pointer;font-weight:700}
+    .btn:hover{border-color:rgba(255,255,255,.22)}
+    .btn.secondary{background:linear-gradient(180deg,#193a37,#132c2a)}
+    .sel{padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:var(--panel2);color:var(--text)}
+    #map{height:74vh;min-height:460px}
+    .pane{max-height:74vh;overflow:auto}
+    .item{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .name{font-weight:800}
+    .sml{font-size:12px;color:var(--muted)}
+    .badge{background:rgba(255,255,255,.1);padding:6px 8px;border-radius:999px;font-size:11px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .chip{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-size:12px}
+    .steps{counter-reset:st}
+    .step{position:relative;padding-left:34px;margin:10px 0}
+    .step:before{counter-increment:st;content:counter(st) ".";position:absolute;left:0;top:0.2rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);width:24px;height:24px;display:grid;place-items:center;border-radius:8px;font-size:12px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-size:12px;margin-left:8px}
+    .warn{color:var(--amber)}
+    .err{color:var(--red)}
+    .footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .toggle{display:flex;gap:8px;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">Premium हिंदी रूट फाइंडर — Google Maps</div>
+      <div class="sub">Start और Destination चुनें • “मेरी लोकेशन” से current location • मोड: कार/पैदल/साइकिल • हिंदी turn‑by‑turn + चौक/मार्केट/ऑटो पॉइंट • Short Address</div>
+      <div class="row">
+        <input id="start" class="input" placeholder="शुरू / Start (उदा. घर का पता)" />
+        <input id="end" class="input" placeholder="मंज़िल / Destination (उदा. Taj Mahal, Agra)" />
+        <select id="mode" class="sel">
+          <option value="DRIVING">कार</option>
+          <option value="WALKING">पैदल</option>
+          <option value="BICYCLING">साइकिल</option>
+        </select>
+        <select id="fare" class="sel">
+          <option value="off">किराया: बंद</option>
+          <option value="auto">किराया: ऑटो</option>
+          <option value="cab">किराया: कैब</option>
+        </select>
+        <button id="locBtn" class="btn secondary">मेरी लोकेशन</button>
+        <button id="goBtn" class="btn">रूट दिखाएँ</button>
+      </div>
+    </div>
+  </header>  <div class="grid wrap">
+    <section class="card">
+      <div id="map"></div>
+      <div class="item footer">
+        <div class="toggle">
+          <input type="checkbox" id="trafficChk" /> <label for="trafficChk" class="sml">ट्रैफिक</label>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="transitChk" /> <label for="transitChk" class="sml">ट्रांजिट</label>
+        </div>
+        <div class="sml">Google Maps Platform • भाषा: हिंदी</div>
+      </div>
+    </section><aside class="card pane" id="panel">
+  <div class="item"><div class="name">यहाँ शॉर्ट ऐड्रेस + निर्देश दिखेंगे</div><div class="sml">Start/Destination भरें और “रूट दिखाएँ” दबाएँ।</div></div>
+</aside>
+
+  </div>  <script>
+    // ================== CONFIG ==================
+    const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_API_KEY_HERE"; // <-- यहीं अपनी Google Maps JavaScript API key डालें
+    const PRICE_PER_KM = { auto: 15, cab: 25 };
+    const POI_KEYWORDS = /(chowk|चौक|chauraha|चौराहा|circle|market|bazaar|mandi|बाज़ार|मार्केट|मंडी|bus|बस|stop|स्टॉप|stand|स्टैंड|taxi|टैक्सी|auto|ऑटो|rickshaw|रिक्शा)/i;
+
+    // ================== STATE ==================
+    let map, directionsService, directionsRenderer, placesService;
+    let trafficLayer, transitLayer;
+    let originPlace, destPlace;
+
+    // ================== HELPERS ==================
+    function fmtKm(meters){ if(meters < 1000) return Math.round(meters)+ ' मीटर'; return (meters/1000).toFixed(1)+' किमी'; }
+    function fmtMin(seconds){ const m = Math.round(seconds/60); return m + ' मिनट'; }
+    function fare(kind, meters){ const km = meters/1000; return Math.round(km * (PRICE_PER_KM[kind]||0)); }
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m])); }
+
+    function htmlToText(html){ const el = document.createElement('div'); el.innerHTML = html; return el.textContent || el.innerText || ""; }
+
+    function hindiStep(step){
+      // Google Directions HTML instructions already localized with language=hi; still normalize wording
+      const base = htmlToText(step.instructions||'');
+      const dist = step.distance ? `, फिर ${fmtKm(step.distance.value)} चलें` : '';
+      // Try to add local style
+      return base.replace(/मुड़ें/g,'कट लें').replace(/दाएँ/g,'दाएँ').replace(/बाएँ/g,'बाएँ') + dist;
+    }
+
+    function makeShortAddress(legs, poiSummary){
+      // Pick main roads from long steps
+      const big = [];
+      legs.forEach(l=> (l.steps||[]).forEach(s=>{ if((s.distance?.value||0)>1200 && s.html_instructions){ const t=htmlToText(s.html_instructions); const m=t.replace(/<[^>]+>/g,'').split('पर ')[1]||t; big.push(m.split(',')[0]); } }));
+      const uniq = [...new Set(big.filter(Boolean))].slice(0,3);
+      const lines = [];
+      if(uniq.length) lines.push(`मुख्य सड़कों से जाइए: ${uniq.join(' → ')}`);
+      if(poiSummary.chowks.length) lines.push(`बीच में बड़े चौक: ${poiSummary.chowks.slice(0,5).join(', ')}`);
+      if(poiSummary.markets.length) lines.push(`प्रमुख मार्केट: ${poiSummary.markets.slice(0,3).join(', ')}`);
+      if(poiSummary.autos.length||poiSummary.bus.length) lines.push(`ऑटो/बस पॉइंट: ${[...poiSummary.autos.slice(0,3), ...poiSummary.bus.slice(0,3)].join(', ')}`);
+      return lines.join('\n');
+    }
+
+    function dedupeById(arr){ const seen=new Set(); return arr.filter(x=>{ if(seen.has(x.place_id)) return false; seen.add(x.place_id); return true;}); }
+
+    // Sample points along polyline every ~1km for Nearby Search
+    function sampleAlongPath(path){
+      const out=[path[0]]; let acc=0;
+      for(let i=1;i<path.length;i++){
+        const a=path[i-1], b=path[i];
+        const d=google.maps.geometry.spherical.computeDistanceBetween(a,b);
+        acc+=d; if(acc>=1000){ out.push(b); acc=0; }
+      }
+      out.push(path[path.length-1]);
+      return out;
+    }
+
+    function classifyPlace(p){
+      const name=(p.name||'').trim();
+      const types=p.types||[];
+      const textMatch = POI_KEYWORDS.test(name);
+      if(textMatch && /(chowk|चौक|chauraha|चौराहा|circle)/i.test(name)) return 'chowk';
+      if(types.includes('taxi_stand') || /taxi|टैक्सी|auto|ऑटो|rickshaw|रिक्शा/i.test(name)) return 'auto';
+      if(types.includes('bus_station') || types.includes('transit_station') || /bus|बस|stop|स्टॉप|stand|स्टैंड/i.test(name)) return 'bus';
+      if(types.includes('shopping_mall') || /market|bazaar|बाज़ार|मार्केट|मंडी/i.test(name)) return 'market';
+      if(textMatch) return 'poi';
+      return null;
+    }
+
+    function groupPOIs(places){
+      const res={chowks:[], markets:[], autos:[], bus:[], poi:[]};
+      for(const p of places){
+        const k=classifyPlace(p);
+        if(!k) continue;
+        const nm=p.name;
+        if(k==='chowk') res.chowks.push(nm);
+        else if(k==='market') res.markets.push(nm);
+        else if(k==='auto') res.autos.push(nm);
+        else if(k==='bus') res.bus.push(nm);
+        else res.poi.push(nm);
+      }
+      // dedupe names
+      for(const k of Object.keys(res)) res[k]=[...new Set(res[k])];
+      return res;
+    }
+
+    function renderPanel(result, poiPlaces){
+      const panel=document.getElementById('panel');
+      panel.innerHTML='';
+      const route=result.routes[0];
+      const leg=route.legs[0];
+      const totalDist=leg.distance?.value||0;
+      const totalDur=leg.duration?.value||0;
+
+      const fareMode=document.getElementById('fare').value;
+      const fareLine = fareMode!=='off' ? ` • अनुमानित किराया: ₹${fare(fareMode, totalDist)}` : '';
+
+      const head=document.createElement('div');
+      head.className='item';
+      head.innerHTML=`<div class="name">कुल दूरी: ${fmtKm(totalDist)} • समय: ${fmtMin(totalDur)}<span class="pill">मोड: ${document.getElementById('mode').selectedOptions[0].textContent}</span>${fareLine}</div>`;
+      panel.appendChild(head);
+
+      const grouped = groupPOIs(poiPlaces);
+      const short=document.createElement('div'); short.className='item';
+      short.innerHTML='<div class="name">शॉर्ट ऐड्रेस (लोकल‑स्टाइल)</div>';
+      const pre=document.createElement('pre'); pre.style.whiteSpace='pre-wrap'; pre.className='sml';
+      pre.textContent=makeShortAddress(result.routes[0].legs, grouped);
+      short.appendChild(pre);
+      const chips=document.createElement('div'); chips.className='chips';
+      chips.innerHTML=`<span class="chip">चौक: ${grouped.chowks.length}</span><span class="chip">मार्केट: ${grouped.markets.length}</span><span class="chip">ऑटो: ${grouped.autos.length}</span><span class="chip">बस: ${grouped.bus.length}</span>`;
+      short.appendChild(chips);
+      panel.appendChild(short);
+
+      const stepsBox=document.createElement('div'); stepsBox.className='item';
+      stepsBox.innerHTML='<div class="name">स्टेप‑बाय‑स्टेप निर्देश</div>';
+      const list=document.createElement('div'); list.className='steps';
+      for(const s of leg.steps){
+        const d=document.createElement('div'); d.className='step';
+        d.innerHTML=`<div>${escapeHtml(hindiStep(s))}</div>`;
+        if(s.distance){ const r=document.createElement('div'); r.className='sml'; r.textContent=`दूरी: ${fmtKm(s.distance.value)}`; d.appendChild(r); }
+        list.appendChild(d);
+      }
+      stepsBox.appendChild(list); panel.appendChild(stepsBox);
+
+      const poiBox=document.createElement('div'); poiBox.className='item';
+      poiBox.innerHTML='<div class="name">रास्ते के महत्वपूर्ण पॉइंट</div>'+
+        `<div class='sml' style='margin:6px 0'><b>बड़े चौक</b><br>${grouped.chowks.slice(0,15).map(n=>`• ${escapeHtml(n)}`).join('<br>') || '—'}</div>`+
+        `<div class='sml' style='margin:6px 0'><b>मार्केट/बाज़ार</b><br>${grouped.markets.slice(0,12).map(n=>`• ${escapeHtml(n)}`).join('<br>') || '—'}</div>`+
+        `<div class='sml' style='margin:6px 0'><b>ऑटो/बस पॉइंट</b><br>${[...grouped.autos.slice(0,10),...grouped.bus.slice(0,10)].map(n=>`• ${escapeHtml(n)}`).join('<br>') || '—'}</div>`;
+      panel.appendChild(poiBox);
+
+      const tip=document.createElement('div'); tip.className='item';
+      tip.innerHTML='<span class="sml">नोट: यह Google Directions + Places डेटा पर आधारित है। वास्तविक ट्रैफिक/वन‑वे/रोडवर्क अलग हो सकता है। हमेशा स्थानीय नियमों का पालन करें।</span>';
+      panel.appendChild(tip);
+    }
+
+    async function fetchPOIsAlongRoute(route){
+      return new Promise((resolve)=>{
+        const path = route.overview_path; // LatLng[]
+        const samples = sampleAlongPath(path);
+        const collected=[]; let idx=0;
+        const radius = 250; // meters corridor
+        function step(){
+          if(idx>=samples.length){ resolve(dedupeById(collected)); return; }
+          const loc=samples[idx++];
+          const req={ location: loc, radius, // types deprecated; use 'keyword' + rankby prominence
+            keyword: 'chowk chauraaha circle market bazaar mandi bus stop stand taxi auto rickshaw',
+          };
+          placesService.nearbySearch(req,(res,status)=>{
+            if(status===google.maps.places.PlacesServiceStatus.OK && Array.isArray(res)){
+              // Filter by keywords/types
+              const filtered=res.filter(p=> POI_KEYWORDS.test(p.name||'') || (p.types||[]).some(t=> ['taxi_stand','bus_station','transit_station','shopping_mall','point_of_interest'].includes(t)) );
+              collected.push(...filtered);
+            }
+            // small delay to respect QPS
+            setTimeout(step, 200);
+          });
+        }
+        step();
+      });
+    }
+
+    function calcRoute(){
+      const mode=document.getElementById('mode').value;
+      if(!originPlace || !destPlace){ alert('कृपया Start और Destination चुनें'); return; }
+      const req={
+        origin: originPlace,
+        destination: destPlace,
+        travelMode: google.maps.TravelMode[mode],
+        provideRouteAlternatives:false,
+        drivingOptions: { departureTime: new Date() },
+        unitSystem: google.maps.UnitSystem.METRIC,
+        region: 'IN'
+      };
+      directionsService.route(req, async (res, status)=>{
+        if(status!==google.maps.DirectionsStatus.OK){ alert('रूट नहीं मिल पाया: '+status); return; }
+        directionsRenderer.setDirections(res);
+        // Fetch POIs along the primary route
+        const route=res.routes[0];
+        const poiPlaces=await fetchPOIsAlongRoute(route);
+        renderPanel(res, poiPlaces);
+      });
+    }
+
+    function initMap(){
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat:28.6139, lng:77.2090}, zoom: 12, mapTypeControl:true, fullscreenControl:true, streetViewControl:true
+      });
+      trafficLayer = new google.maps.TrafficLayer();
+      transitLayer = new google.maps.TransitLayer();
+
+      document.getElementById('trafficChk').addEventListener('change', (e)=>{
+        e.target.checked ? trafficLayer.setMap(map) : trafficLayer.setMap(null);
+      });
+      document.getElementById('transitChk').addEventListener('change', (e)=>{
+        e.target.checked ? transitLayer.setMap(map) : transitLayer.setMap(null);
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({ map, suppressMarkers:false, preserveViewport:false, polylineOptions:{strokeOpacity:0.95, strokeWeight:6} });
+      placesService = new google.maps.places.PlacesService(map);
+
+      const startInput=document.getElementById('start');
+      const endInput=document.getElementById('end');
+      const acStart = new google.maps.places.Autocomplete(startInput, { componentRestrictions:{ country:['in'] }, fields:['place_id','geometry','name','formatted_address'] });
+      const acEnd   = new google.maps.places.Autocomplete(endInput,   { componentRestrictions:{ country:['in'] }, fields:['place_id','geometry','name','formatted_address'] });
+
+      acStart.addListener('place_changed', ()=>{
+        const p=acStart.getPlace(); if(!p || !p.geometry) return;
+        originPlace = { placeId: p.place_id };
+      });
+      acEnd.addListener('place_changed', ()=>{
+        const p=acEnd.getPlace(); if(!p || !p.geometry) return;
+        destPlace = { placeId: p.place_id };
+      });
+
+      document.getElementById('goBtn').addEventListener('click', calcRoute);
+      document.getElementById('mode').addEventListener('change', calcRoute);
+      document.getElementById('fare').addEventListener('change', calcRoute);
+
+      document.getElementById('locBtn').addEventListener('click', ()=>{
+        if(!navigator.geolocation){ alert('Geolocation समर्थित नहीं है।'); return; }
+        navigator.geolocation.getCurrentPosition((pos)=>{
+          const { latitude:lat, longitude:lng } = pos.coords;
+          originPlace = { location: new google.maps.LatLng(lat,lng) };
+          startInput.value = 'मेरी वर्तमान लोकेशन';
+          map.setCenter({lat,lng}); map.setZoom(15);
+        }, ()=> alert('लोकेशन अनुमति दें फिर पुनः प्रयास करें।'));
+      });
+    }
+
+    // Dynamically inject Google Maps JS (Hindi)
+    (function(){
+      const s=document.createElement('script');
+      const params=new URLSearchParams({ key: GOOGLE_MAPS_API_KEY, libraries:'places,geometry', language:'hi', region:'IN', callback:'initMap' });
+      s.src='https://maps.googleapis.com/maps/api/js?'+params.toString();
+      s.async=true; s.defer=true; s.onerror=function(){ alert('Google Maps script लोड नहीं हो पाया. API key जाँचें.'); };
+      document.head.appendChild(s);
+    })();
+  </script></body>
+</html>
