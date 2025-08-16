@@ -3,8 +3,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OG हिंदी रूट फाइंडर — शॉर्ट ऐड्रेस + चौक/मार्केट/ऑटो पॉइंट</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=\"anonymous\">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=\"anonymous\"></script>
   <!-- Turf.js for geometry ops (buffer, distance to line, bbox, etc.) -->
   <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <style>
@@ -76,7 +76,7 @@
   </header>  <div class="grid wrap">
     <section class="card">
       <div id="map"></div>
-      <div class="item smla" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <div class=\"item sml\" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
         <span class="badge">Tiles © OpenStreetMap</span>
         <span class="sml">नोट: पब्लिक APIs (Nominatim/OSRM/Overpass) का प्रयोग। भारी ट्रैफिक पर सीमाएँ हो सकती हैं।</span>
       </div>
@@ -105,7 +105,16 @@
 
     // ==== Utils
     const RsPerKm = { auto: 15, cab: 25 };
-    function escapeHtml(s){return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));}
+    function escapeHtml(s){
+      return String(s||'').replace(/[&<>"']/g, function(m){
+        if(m==='&') return '&amp;';
+        if(m==='<') return '&lt;';
+        if(m==='>') return '&gt;';
+        if(m==='"') return '&quot;';
+        if(m==='\'') return '&#39;';
+        return m;
+      });
+    }[m]));}
     function fmtKm(m){ if(m < 1000) return Math.round(m)+ ' मीटर'; return (m/1000).toFixed(1) + ' किमी'; }
     function fmtMin(s){ const m = Math.round(s/60); return m + ' मिनट'; }
     function titleOf(name){ return name? name.split(',')[0] : ''; }
@@ -123,86 +132,8 @@
       url.searchParams.set('limit','6');
       url.searchParams.set('addressdetails','1');
       url.searchParams.set('namedetails','1');
-      const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
-      if(!res.ok) throw new Error('Geocode error');
-      return res.json();
-    }
-
-    function attachSuggest(input, listEl){
-      let t; input.addEventListener('input', ()=>{
-        clearTimeout(t); const q = input.value.trim(); if(!q){ listEl.hidden=true; listEl.innerHTML=''; return; }
-        t = setTimeout(async ()=>{
-          try {
-            const data = await geocode(q);
-            listEl.innerHTML = data.map(p=>`<li data-lat="${p.lat}" data-lon="${p.lon}" data-name="${escapeHtml(p.display_name)}">${escapeHtml(titleOf(p.display_name))} <span class='sml'>${escapeHtml(p.type||'')}</span></li>`).join('');
-            listEl.hidden = false;
-          } catch(e){ listEl.hidden = true; }
-        }, 300);
-      });
-      listEl.addEventListener('click', (e)=>{
-        const li = e.target.closest('li'); if(!li) return;
-        input.value = li.getAttribute('data-name');
-        input.dataset.lat = li.getAttribute('data-lat');
-        input.dataset.lon = li.getAttribute('data-lon');
-        listEl.hidden = true;
-      });
-      document.addEventListener('click', (e)=>{ if(!listEl.contains(e.target) && e.target!==input) listEl.hidden = true; });
-    }
-    attachSuggest(startInput, sugStart);
-    attachSuggest(endInput,   sugEnd);
-
-    // ==== Routing (OSRM)
-    async function fetchRoute(a, b, mode){
-      const base = 'https://router.project-osrm.org/route/v1/' + encodeURIComponent(mode);
-      const url = `${base}/${a[1]},${a[0]};${b[1]},${b[0]}?overview=full&geometries=geojson&steps=true`;
-      const res = await fetch(url);
-      if(!res.ok) throw new Error('Routing error');
-      return res.json();
-    }
-
-    async function readPoint(input){
-      if(input.dataset.lat && input.dataset.lon){ return [parseFloat(input.dataset.lat), parseFloat(input.dataset.lon)]; }
-      const q = input.value.trim(); if(!q) return null;
-      const data = await geocode(q); if(!data.length) return null;
-      input.dataset.lat = data[0].lat; input.dataset.lon = data[0].lon;
-      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-    }
-
-    // ==== Overpass (POIs along route)
-    async function fetchPOIsAlong(routeGeoJson){
-      // 1) Build a bbox for Overpass (bigger), then filter by distance to route using Turf
-      const line = routeGeoJson;
-      const bbox = turf.bbox(line); // [minX,minY,maxX,maxY]
-      const [minLon,minLat,maxLon,maxLat] = bbox;
-
-      // Tags of interest
-      const query = `
-        [out:json][timeout:25];
-        (
-          // Chowk / Intersections (signals, roundabouts, named *Chowk/Chauraha*)
-          node[highway=traffic_signals](${minLat},${minLon},${maxLat},${maxLon});
-          way[junction=roundabout](${minLat},${minLon},${maxLat},${maxLon});
-          node[name~"Chowk|चौक|Chauraha|चौराहा|Circle", i](${minLat},${minLon},${maxLat},${maxLon});
-
-          // Markets
-          node[amenity=marketplace](${minLat},${minLon},${maxLat},${maxLon});
-          way[amenity=marketplace](${minLat},${minLon},${maxLat},${maxLon});
-          node[name~"Market|Bazaar|बाज़ार|मार्केट", i](${minLat},${minLon},${maxLat},${maxLon});
-
-          // Auto/Bus points
-          node[amenity=taxi](${minLat},${minLon},${maxLat},${maxLon});
-          node[highway=bus_stop](${minLat},${minLon},${maxLat},${maxLon});
-          node[public_transport=platform](${minLat},${minLon},${maxLat},${maxLon});
-        );
-        out center qt;`;
-
-      const res = await fetch('https://overpass-api.nextzen.org/api/interpreter', { // fast public mirror; can swap to main if needed
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'data=' + encodeURIComponent(query)
-      });
-      if(!res.ok) throw new Error('Overpass error');
-      const data = await res.json();
+      url.searchParams.set('accept-language','hi,en');
+      const data = await overpassFetch(query);
 
       // 2) Normalize and distance-filter (<= 120 m from route line)
       const pts = [];
@@ -214,7 +145,7 @@
         }
       });
 
-      const lineFeature = line; // already GeoJSON LineString
+      const lineFeature = { type: 'Feature', geometry: line, properties: {} }; // wrap as Feature for Turf
       const out = [];
       pts.forEach(p=>{
         const dist = turf.pointToLineDistance(turf.point([p.lon,p.lat]), lineFeature, {units:'meters'});
