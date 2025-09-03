@@ -1,328 +1,608 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Premium भारतीय रोड मैप - 100% Free</title>
-  <!-- Leaflet (Free Maps) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Font Awesome (Icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #6a11cb;
-      --secondary: #2575fc;
-      --text: #333;
-      --light: #f8f9fa;
-      --dark: #343a40;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: #f5f5f5;
-      color: var(--text);
-    }
-    #app {
-      display: flex;
-      height: 100vh;
-    }
-    #map {
-      flex: 1;
-      height: 100%;
-    }
-    .sidebar {
-      width: 350px;
-      background: white;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-      overflow-y: auto;
-      padding: 20px;
-    }
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .search-box input {
-      flex: 1;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-    .search-box button {
-      background: linear-gradient(to right, var(--primary), var(--secondary));
-      color: white;
-      border: none;
-      padding: 0 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .location-card {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .location-card h3 {
-      margin-bottom: 10px;
-      color: var(--primary);
-    }
-    .location-card p {
-      color: #666;
-      margin-bottom: 5px;
-    }
-    .poi-tag {
-      display: inline-block;
-      background: #e9f5ff;
-      color: var(--secondary);
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 12px;
-      margin-right: 5px;
-      margin-bottom: 5px;
-    }
-    .controls {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-    .controls button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    @media (max-width: 768px) {
-      #app {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        height: 300px;
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ShaheedCoin — Payment Proof Verify</title>
+<meta name="description" content="Upload UPI/Bank payment screenshot with UTR, and admin can verify payments." />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ==== THEME (Luxury Pink) ==== */
+    --bg:#0b0a0f;
+    --pane:#12111a;
+    --glass:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.12);
+    --text:#f3f4f8;
+    --muted:#b6b8c6;
+
+    /* Primary (Pink + Rose) */
+    --primary:#ff3ea5;      /* pink */
+    --primary-2:#ffc0df;    /* soft pink */
+    --accent:#ffb86b;       /* rose-gold accent */
+    --ok:#35d07f;
+    --warn:#ffd000;
+    --bad:#ff5c7a;
+
+    --radius:18px;
+    --radius-lg:24px;
+    --shadow:0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+
+    /* Admin PIN – change here */
+    --admin-pin:"2590";
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Manrope,system-ui,Segoe UI,Inter,sans-serif; color:var(--text);
+    background:
+      radial-gradient(70rem 60rem at -10% -10%, rgba(255,62,165,.12) 0%, transparent 55%),
+      radial-gradient(70rem 60rem at 110% 0%, rgba(255,184,107,.10) 0%, transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  a{color:inherit; text-decoration:none}
+  img{max-width:100%; display:block}
+
+  .container{max-width:1100px; margin:0 auto; padding:0 18px}
+  .nav{
+    position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
+    background:linear-gradient(to bottom, rgba(11,10,15,.85), rgba(11,10,15,.55));
+    border-bottom:1px solid var(--border);
+  }
+  .row{display:flex; justify-content:space-between; align-items:center; gap:12px}
+  .brand{display:flex; align-items:center; gap:12px; padding:12px 0}
+  .logo{
+    width:46px; height:46px; border-radius:14px; display:grid; place-items:center; box-shadow:0 12px 30px rgba(255,62,165,.25);
+    background:
+      conic-gradient(from 120deg, #ffe5f1, #ff3ea5, #ffb86b, #ffd8ee, #ffe5f1);
+    color:#120d14; font-weight:900; letter-spacing:.3px;
+  }
+  .brand h1{font-size:18px; margin:0}
+  .navlinks{display:flex; gap:8px; flex-wrap:wrap}
+  .navlinks a{padding:10px 14px; border-radius:12px; font-weight:800; color:#fff; opacity:.9}
+  .navlinks a:hover{background:var(--glass)}
+  .cta{background:linear-gradient(92deg, var(--primary), var(--accent)); color:#121214; box-shadow:0 12px 26px rgba(255,62,165,.35); border-radius:999px; padding:10px 16px; font-weight:900}
+
+  .hero{padding:50px 0 20px}
+  .badge{
+    display:inline-flex; gap:10px; align-items:center;
+    padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:var(--glass); color:var(--primary-2); font-weight:800
+  }
+  .title{font-size:42px; line-height:1.1; margin:12px 0 6px}
+  .title .grad{background:linear-gradient(92deg, #fff, var(--primary) 55%, var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .lead{color:var(--muted); max-width:760px}
+
+  /* Grid layout */
+  .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:18px; margin-top:24px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+  .card{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+  .card h3{margin:0 0 8px}
+
+  /* Form */
+  .field{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+  .field.inline{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:640px){.field.inline{grid-template-columns:1fr}}
+  label{font-weight:800; color:#fff}
+  input,select,textarea{
+    background:#100f16; border:1px solid var(--border); color:var(--text);
+    padding:13px 14px; border-radius:14px; outline:none; transition:border .2s ease
+  }
+  textarea{min-height:110px}
+  input:focus, select:focus, textarea:focus{border-color:var(--primary)}
+
+  /* Dropzone */
+  .drop{
+    border:1.5px dashed rgba(255,255,255,.25); border-radius:16px; padding:14px;
+    display:grid; place-items:center; text-align:center; gap:8px; color:var(--muted);
+    background:rgba(255,255,255,.02)
+  }
+  .drop.drag{border-color:var(--primary); color:#fff; background:rgba(255,62,165,.06)}
+  .preview{
+    margin-top:12px; display:grid; grid-template-columns:100px 1fr; gap:12px; align-items:center
+  }
+  .preview img{width:100px; height:100px; object-fit:cover; border-radius:12px; border:1px solid var(--border)}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:12px 16px; border-radius:999px; border:1px solid var(--border);
+    background:var(--pane); font-weight:900; cursor:pointer
+  }
+  .btn.primary{background:linear-gradient(92deg, var(--primary), var(--accent)); color:#161216; border:0}
+  .btn.ghost{background:transparent}
+  .btn.small{padding:8px 12px; border-radius:12px; font-weight:800}
+
+  /* Table */
+  .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:10px}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{padding:8px 12px; border:1px solid var(--border); border-radius:999px; background:var(--glass); color:var(--muted); font-weight:800; cursor:pointer}
+  .chip.active{background:linear-gradient(92deg, var(--primary), var(--accent)); color:#161216; border:0}
+  .search{flex:1; min-width:220px}
+  .table{width:100%; border-collapse:separate; border-spacing:0 10px}
+  .table th{font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); text-align:left; padding:0 10px}
+  .table td{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid var(--border); padding:12px; border-left:0; border-right:0}
+  .table tr td:first-child{border-left:1px solid var(--border); border-radius:12px 0 0 12px}
+  .table tr td:last-child{border-right:1px solid var(--border); border-radius:0 12px 12px 0}
+  .status{font-weight:900; padding:6px 10px; border-radius:999px; display:inline-block}
+  .PENDING{background:rgba(255,208,0,.12); color:#ffe27a; border:1px solid rgba(255,208,0,.35)}
+  .VERIFIED{background:rgba(53,208,127,.12); color:#86f1b6; border:1px solid rgba(53,208,127,.35)}
+  .REJECTED{background:rgba(255,92,122,.12); color:#ffbac7; border:1px solid rgba(255,92,122,.35)}
+
+  /* Modal */
+  .modal{
+    position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px
+  }
+  .modal.open{display:flex}
+  .sheet{max-width:720px; width:100%; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden}
+  .sheet .head{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--border)}
+  .sheet .body{padding:16px}
+  .x{cursor:pointer; font-weight:900; opacity:.8}
+  .img-full{width:100%; border-radius:12px; border:1px solid var(--border)}
+
+  footer{border-top:1px solid var(--border); margin-top:28px; padding:20px 0; color:var(--muted)}
+</style>
 </head>
 <body>
-  <div id="app">
-    <div id="map"></div>
-    <div class="sidebar">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="लोकेशन ढूँढें (जैसे: सदर बाज़ार)">
-        <button onclick="searchLocation()"><i class="fas fa-search"></i></button>
-      </div>
-      <div id="results">
-        <div class="location-card">
-          <h3>Premium भारतीय रोड मैप</h3>
-          <p>किसी भी जगह को सर्च करें या अपनी लोकेशन डिटेक्ट करें</p>
-          <div style="margin-top: 10px;">
-            <span class="poi-tag">चौक</span>
-            <span class="poi-tag">मार्केट</span>
-            <span class="poi-tag">ऑटो स्टैंड</span>
-            <span class="poi-tag">बस स्टॉप</span>
-          </div>
-        </div>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container">
+      <div class="row">
+        <a class="brand" href="#home">
+          <div class="logo">SC</div>
+          <h1>ShaheedCoin <span style="opacity:.7">• Proof Verify</span></h1>
+        </a>
+        <nav class="navlinks">
+          <a href="#submit">Submit Proof</a>
+          <a href="#admin" class="cta">Admin</a>
+        </nav>
       </div>
     </div>
-    <div class="controls">
-      <button onclick="locateMe()"><i class="fas fa-location-arrow"></i> मेरी लोकेशन</button>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="container">
+      <span class="badge">🪙 Premium • Pink Luxury UI</span>
+      <h2 class="title"><span class="grad">Payment Proof</span> submission & verification.</h2>
+      <p class="lead">User yahan apna payment screenshot upload karega, UTR/Ref no., amount & date fill karega. Tum admin panel se verify/reject kar sakte ho with notes. Data browser ke localStorage me save hota hai — GitHub Pages par bhi kaam karega.</p>
+    </div>
+  </section>
+
+  <!-- FORM + PREVIEW -->
+  <section class="container grid" id="submit">
+    <!-- LEFT: FORM -->
+    <div class="card">
+      <h3>Submit Payment Proof</h3>
+      <form id="proofForm">
+        <div class="field inline">
+          <div class="field">
+            <label>Payer Name</label>
+            <input name="name" placeholder="Your full name" required>
+          </div>
+          <div class="field">
+            <label>Contact (Phone or Email)</label>
+            <input name="contact" placeholder="+91-XXXXXXXXXX or you@mail.com" required>
+          </div>
+        </div>
+
+        <div class="field inline">
+          <div class="field">
+            <label>Amount (INR)</label>
+            <input name="amount" type="number" min="1" step="0.01" placeholder="e.g. 999.00" required>
+          </div>
+          <div class="field">
+            <label>Payment Date & Time</label>
+            <input name="datetime" type="datetime-local" required>
+          </div>
+        </div>
+
+        <div class="field inline">
+          <div class="field">
+            <label>Payment Method</label>
+            <select name="method" required>
+              <option value="">Select</option>
+              <option>UPI</option>
+              <option>IMPS</option>
+              <option>NEFT</option>
+              <option>RTGS</option>
+              <option>Card</option>
+              <option>Wallet</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>UTR / Ref No.</label>
+            <input name="utr" placeholder="e.g. 312518765432" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Notes (optional)</label>
+          <textarea name="note" placeholder="Anything we should know?"></textarea>
+        </div>
+
+        <!-- DROPZONE -->
+        <div class="field">
+          <label>Upload Screenshot (JPG/PNG/PDF, max 5MB)</label>
+          <div class="drop" id="drop">
+            <div>Drag & drop here or <b>click to upload</b></div>
+            <input id="file" type="file" accept="image/*,application/pdf" hidden>
+          </div>
+          <div class="preview" id="preview" style="display:none">
+            <img id="thumb" alt="preview"/>
+            <div>
+              <div id="fname" style="font-weight:800"></div>
+              <div id="fmeta" style="color:var(--muted)"></div>
+              <button type="button" class="btn small" id="viewFull">View</button>
+              <button type="button" class="btn small" id="clearFile">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+          <button class="btn primary" type="submit">Submit Proof</button>
+          <button class="btn ghost" type="button" id="resetForm">Reset</button>
+          <small style="color:var(--muted)">This is a demo UI (no auto bank check). Admin will manually verify.</small>
+        </div>
+      </form>
+    </div>
+
+    <!-- RIGHT: INFO -->
+    <div class="card">
+      <h3>Guidelines</h3>
+      <ul style="margin:10px 0 0 18px; line-height:1.7; color:var(--muted)">
+        <li>Screenshot clearly show: <b>Amount</b>, <b>Date & Time</b>, <b>UTR/Ref</b>, <b>Success</b> status.</li>
+        <li>UTR/Ref should be correct; wrong UTR will be <b>rejected</b>.</li>
+        <li>Only <b>JPG/PNG/PDF</b>, max <b>5MB</b>.</li>
+        <li>After submit, status will be <span class="status PENDING">Pending</span> until admin verifies.</li>
+      </ul>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+        <a href="#admin" class="btn">Go to Admin</a>
+        <button class="btn" id="exportCsvBtn" type="button">Export CSV</button>
+      </div>
+
+      <div style="margin-top:18px; border-top:1px solid var(--border); padding-top:12px">
+        <h3 style="margin:0 0 6px">Brand Story</h3>
+        <p class="lead" style="font-size:14px">ShaheedCoin is a tribute-inspired demo brand. UI focuses on trust, clarity and premium feel — warna backend se connect karke real settlement/ledger bhi add ho sakta hai.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <section class="container" id="admin" style="margin-top:28px">
+    <div class="card">
+      <div class="toolbar">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+          <span class="chip active" data-filter="ALL">All</span>
+          <span class="chip" data-filter="PENDING">Pending</span>
+          <span class="chip" data-filter="VERIFIED">Verified</span>
+          <span class="chip" data-filter="REJECTED">Rejected</span>
+        </div>
+        <input class="search" id="search" placeholder="Search name, contact, UTR..." />
+        <button class="btn" id="lockBtn" type="button">Unlock Admin</button>
+      </div>
+
+      <div style="overflow:auto">
+        <table class="table" id="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Payer</th>
+              <th>Contact</th>
+              <th>Amount</th>
+              <th>UTR</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Proof</th>
+              <th>Status</th>
+              <th>Admin Note</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div class="logo" style="width:38px;height:38px;border-radius:12px">SC</div>
+        <div><b>ShaheedCoin</b><br><small>© <span id="year"></span> All rights reserved.</small></div>
+      </div>
+      <small>Tip: Change theme by editing CSS variables at top.</small>
+    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div class="modal" id="imgModal">
+    <div class="sheet">
+      <div class="head">
+        <b>Proof Preview</b>
+        <span class="x" data-close="#imgModal">✕</span>
+      </div>
+      <div class="body">
+        <img id="modalImg" class="img-full" alt="full proof">
+      </div>
     </div>
   </div>
 
-  <script>
-    // मैप इनिशियलाइज़ करें
-    const map = L.map('map').setView([28.6139, 77.2090], 12);
-    
-    // OpenStreetMap टाइल्स
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+  <div class="modal" id="adminModal">
+    <div class="sheet" style="max-width:540px">
+      <div class="head">
+        <b>Update Status</b>
+        <span class="x" data-close="#adminModal">✕</span>
+      </div>
+      <div class="body">
+        <form id="adminForm">
+          <div class="field">
+            <label>Status</label>
+            <select name="status" required>
+              <option>PENDING</option>
+              <option>VERIFIED</option>
+              <option>REJECTED</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Admin Note</label>
+            <textarea name="adminNote" placeholder="Reason / reference"></textarea>
+          </div>
+          <div style="display:flex; gap:10px; justify-content:flex-end">
+            <button class="btn" type="button" data-close="#adminModal">Cancel</button>
+            <button class="btn primary" type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-    // सर्च फंक्शन (Nominatim API - Free)
-    async function searchLocation() {
-      const query = document.getElementById('searchInput').value;
-      if (!query) return;
-      
-      try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=IN&limit=5`);
-        const data = await response.json();
-        
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = '';
-        
-        if (data.length === 0) {
-          resultsDiv.innerHTML = '<div class="location-card"><p>कोई रिजल्ट नहीं मिला</p></div>';
-          return;
-        }
-        
-        // मैप पर मार्कर लगाएँ
-        data.forEach(item => {
-          const lat = parseFloat(item.lat);
-          const lon = parseFloat(item.lon);
-          
-          const marker = L.marker([lat, lon]).addTo(map);
-          marker.bindPopup(`<b>${item.display_name}</b>`).openPopup();
-          
-          // रिजल्ट कार्ड बनाएँ
-          const card = document.createElement('div');
-          card.className = 'location-card';
-          card.innerHTML = `
-            <h3>${item.display_name.split(',')[0]}</h3>
-            <p>${item.display_name}</p>
-            <div style="margin-top: 10px;">
-              <span class="poi-tag">लैट: ${lat.toFixed(4)}</span>
-              <span class="poi-tag">लॉन्ग: ${lon.toFixed(4)}</span>
-            </div>
-          `;
-          card.onclick = () => {
-            map.setView([lat, lon], 16);
-            marker.openPopup();
-          };
-          resultsDiv.appendChild(card);
-        });
-        
-        // पहले रिजल्ट पर जूम करें
-        map.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 14);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        alert('सर्च करने में समस्या आई!');
-      }
+<script>
+  const $ = (q,root=document)=>root.querySelector(q);
+  const $$ = (q,root=document)=>[...root.querySelectorAll(q)];
+  const STORAGE_KEY = 'shaheedcoin_proofs_v1';
+
+  const yearEl = $('#year'); yearEl.textContent = new Date().getFullYear();
+
+  // ===== File Upload (Drag & Drop + click) =====
+  const drop = $('#drop'), fileInput = $('#file'), preview = $('#preview');
+  const thumb = $('#thumb'), fname = $('#fname'), fmeta = $('#fmeta'), viewFull = $('#viewFull'), clearFile = $('#clearFile');
+  let fileBlob = null, fileDataURL = null;
+
+  function setPreview(file){
+    if(!file) { preview.style.display='none'; return; }
+    fname.textContent = file.name;
+    fmeta.textContent = `${(file.size/1024).toFixed(0)} KB • ${file.type||'file'}`;
+    preview.style.display='grid';
+    if(file.type.startsWith('image/')){
+      const reader = new FileReader();
+      reader.onload = e => { fileDataURL = e.target.result; thumb.src = fileDataURL; };
+      reader.readAsDataURL(file);
+    } else {
+      fileDataURL = null; thumb.src = '';
     }
+  }
 
-    // मेरी लोकेशन
-    function locateMe() {
-      if (!navigator.geolocation) {
-        alert("आपका ब्राउज़र लोकेशन सपोर्ट नहीं करता");
-        return;
-      }
-      
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          
-          // मैप पर मार्कर लगाएँ
-          L.marker([lat, lon]).addTo(map)
-            .bindPopup("<b>मेरी लोकेशन</b>")
-            .openPopup();
-          
-          // मैप को सेंटर करें
-          map.setView([lat, lon], 15);
-          
-          // नजदीकी पॉइंट्स ढूँढें
-          findNearbyPOIs(lat, lon);
-        },
-        (error) => {
-          alert("लोकेशन एक्सेस नहीं दी गई!");
-        }
-      );
+  function handleFiles(files){
+    const f = files?.[0];
+    if(!f) return;
+    const okType = (f.type.startsWith('image/') || f.type==='application/pdf');
+    const okSize = f.size <= 5*1024*1024;
+    if(!okType) return alert('Only JPG/PNG/PDF allowed.');
+    if(!okSize) return alert('Max 5MB allowed.');
+    fileBlob = f; setPreview(f);
+  }
+
+  drop.addEventListener('click', ()=>fileInput.click());
+  drop.addEventListener('dragover', e=>{e.preventDefault(); drop.classList.add('drag')});
+  drop.addEventListener('dragleave', ()=>drop.classList.remove('drag'));
+  drop.addEventListener('drop', e=>{
+    e.preventDefault(); drop.classList.remove('drag'); handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', e=>handleFiles(e.target.files));
+  clearFile.addEventListener('click', ()=>{fileBlob=null; fileDataURL=null; fileInput.value=''; setPreview(null);});
+  viewFull.addEventListener('click', ()=>{
+    if(fileDataURL){ $('#modalImg').src = fileDataURL; openModal('#imgModal'); }
+    else alert('Preview only for images. PDFs will still be saved.');
+  });
+
+  // ===== Form Submit =====
+  const form = $('#proofForm');
+  form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const fd = new FormData(form);
+    // Basic UTR check: 10–16 chars, letters/numbers only
+    const utr = (fd.get('utr')||'').trim();
+    if(!/^[A-Za-z0-9]{10,16}$/.test(utr)){
+      return alert('Enter a valid UTR/Ref: 10–16 letters/numbers, no spaces.');
     }
+    if(!fileBlob){ return alert('Please attach a screenshot (JPG/PNG/PDF).'); }
 
-    // नजदीकी पॉइंट्स ढूँढें (Overpass API - Free)
-    async function findNearbyPOIs(lat, lon) {
-      try {
-        const radius = 500; // मीटर में
-        const query = `
-          [out:json];
-          (
-            node["amenity"="marketplace"](around:${radius},${lat},${lon});
-            node["highway"="bus_stop"](around:${radius},${lat},${lon});
-            node["amenity"="taxi"](around:${radius},${lat},${lon});
-            node["place"="square"](around:${radius},${lat},${lon});
-          );
-          out body;
-        `;
-        
-        const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = '<div class="location-card"><h3>नजदीकी पॉइंट्स</h3></div>';
-        
-        if (data.elements.length === 0) {
-          resultsDiv.innerHTML += '<div class="location-card"><p>कोई नजदीकी पॉइंट नहीं मिला</p></div>';
-          return;
-        }
-        
-        // POIs को ग्रुप करें
-        const pois = {
-          market: [],
-          bus: [],
-          taxi: [],
-          square: []
-        };
-        
-        data.elements.forEach(item => {
-          if (item.tags) {
-            if (item.tags.amenity === "marketplace") pois.market.push(item);
-            else if (item.tags.amenity === "taxi") pois.taxi.push(item);
-            else if (item.tags.highway === "bus_stop") pois.bus.push(item);
-            else if (item.tags.place === "square") pois.square.push(item);
-          }
-        });
-        
-        // रिजल्ट दिखाएँ
-        if (pois.market.length > 0) {
-          let html = '<div class="location-card"><h3><i class="fas fa-shopping-cart"></i> मार्केट</h3>';
-          pois.market.forEach(market => {
-            html += `<p>${market.tags.name || 'अनाम मार्केट'}</p>`;
-          });
-          html += '</div>';
-          resultsDiv.innerHTML += html;
-        }
-        
-        if (pois.bus.length > 0) {
-          let html = '<div class="location-card"><h3><i class="fas fa-bus"></i> बस स्टॉप</h3>';
-          pois.bus.forEach(bus => {
-            html += `<p>${bus.tags.name || 'अनाम बस स्टॉप'}</p>`;
-          });
-          html += '</div>';
-          resultsDiv.innerHTML += html;
-        }
-        
-        if (pois.taxi.length > 0) {
-          let html = '<div class="location-card"><h3><i class="fas fa-taxi"></i> ऑटो/टैक्सी स्टैंड</h3>';
-          pois.taxi.forEach(taxi => {
-            html += `<p>${taxi.tags.name || 'अनाम टैक्सी स्टैंड'}</p>`;
-          });
-          html += '</div>';
-          resultsDiv.innerHTML += html;
-        }
-        
-        if (pois.square.length > 0) {
-          let html = '<div class="location-card"><h3><i class="fas fa-map-marker-alt"></i> चौक/चौराहा</h3>';
-          pois.square.forEach(square => {
-            html += `<p>${square.tags.name || 'अनाम चौराहा'}</p>`;
-          });
-          html += '</div>';
-          resultsDiv.innerHTML += html;
-        }
-        
-      } catch (error) {
-        console.error('Error fetching POIs:', error);
-      }
-    }
+    const payload = {
+      id: 'TX'+Date.now(),
+      name: (fd.get('name')||'').trim(),
+      contact: (fd.get('contact')||'').trim(),
+      amount: Number(fd.get('amount')),
+      method: fd.get('method'),
+      datetime: fd.get('datetime'),
+      utr,
+      note: (fd.get('note')||'').trim(),
+      status: 'PENDING',
+      adminNote: '',
+      fileName: fileBlob.name,
+      fileType: fileBlob.type,
+      fileSize: fileBlob.size,
+      // Store lightweight: image as DataURL (warning: storage size). For PDF, we skip preview but store as base64 too.
+      fileData: null
+    };
 
-    // एंटर प्रेस पर सर्च
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchLocation();
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      payload.fileData = ev.target.result;
+      const all = loadAll(); all.unshift(payload); saveAll(all);
+      alert('Proof submitted! Your status is PENDING.');
+      form.reset(); fileBlob=null; fileDataURL=null; setPreview(null);
+      renderTable();
+      location.hash = '#admin';
+    };
+    reader.readAsDataURL(fileBlob);
+  });
+
+  $('#resetForm').addEventListener('click', ()=>{
+    form.reset(); fileBlob=null; fileDataURL=null; setPreview(null);
+  });
+
+  // ===== Storage Helpers =====
+  function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
+  function saveAll(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+  // ===== Table Render =====
+  const tbody = $('#tbody');
+  let currentFilter = 'ALL', adminUnlocked = false, editId = null;
+
+  function renderTable(){
+    const q = ($('#search').value||'').toLowerCase().trim();
+    const data = loadAll().filter(r=>{
+      const f = (currentFilter==='ALL'||r.status===currentFilter);
+      const s = [r.name,r.contact,r.utr].join(' ').toLowerCase().includes(q);
+      return f && s;
     });
-  </script>
+
+    tbody.innerHTML = '';
+    data.forEach((r,idx)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>#${idx+1}</td>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td>${escapeHtml(r.contact)}</td>
+        <td>₹ ${r.amount.toFixed(2)}</td>
+        <td><code>${escapeHtml(r.utr)}</code></td>
+        <td>${escapeHtml(r.method)}</td>
+        <td>${new Date(r.datetime).toLocaleString()}</td>
+        <td>
+          <button class="btn small" data-view="${r.id}">View</button>
+          <a class="btn small" download="${r.fileName}" href="${r.fileData}">Download</a>
+        </td>
+        <td><span class="status ${r.status}">${r.status}</span></td>
+        <td>${escapeHtml(r.adminNote||'')}</td>
+        <td>
+          <button class="btn small" data-edit="${r.id}" ${adminUnlocked?'':'disabled'}>Update</button>
+          <button class="btn small" data-del="${r.id}" ${adminUnlocked?'':'disabled'}>Delete</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(s=''){
+    return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+  }
+
+  // Filters
+  $$('.chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      $$('.chip').forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      currentFilter = ch.dataset.filter;
+      renderTable();
+    });
+  });
+
+  // Search
+  $('#search').addEventListener('input', renderTable);
+
+  // Delegation: View/Edit/Delete
+  tbody.addEventListener('click', e=>{
+    const viewId = e.target.getAttribute('data-view');
+    const edit = e.target.getAttribute('data-edit');
+    const del = e.target.getAttribute('data-del');
+
+    if(viewId){
+      const rec = loadAll().find(x=>x.id===viewId);
+      if(rec && rec.fileData && rec.fileType.startsWith('image/')){
+        $('#modalImg').src = rec.fileData; openModal('#imgModal');
+      } else {
+        alert('Preview only for images. Use Download for PDF.');
+      }
+    }
+
+    if(edit){
+      if(!adminUnlocked) return alert('Unlock admin first.');
+      editId = edit;
+      const rec = loadAll().find(x=>x.id===editId);
+      if(!rec) return;
+      const form = $('#adminForm');
+      form.status.value = rec.status;
+      form.adminNote.value = rec.adminNote||'';
+      openModal('#adminModal');
+    }
+
+    if(del){
+      if(!adminUnlocked) return alert('Unlock admin first.');
+      if(confirm('Delete this record?')){
+        const arr = loadAll().filter(x=>x.id!==del);
+        saveAll(arr); renderTable();
+      }
+    }
+  });
+
+  // Admin modal save
+  $('#adminForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const arr = loadAll();
+    const i = arr.findIndex(x=>x.id===editId);
+    if(i>-1){
+      arr[i].status = fd.get('status');
+      arr[i].adminNote = fd.get('adminNote');
+      saveAll(arr);
+      closeModal('#adminModal'); renderTable();
+    }
+  });
+
+  // Admin lock
+  $('#lockBtn').addEventListener('click', ()=>{
+    if(adminUnlocked){
+      adminUnlocked = false; alert('Admin locked.');
+      $('#lockBtn').textContent = 'Unlock Admin';
+      renderTable();
+    } else {
+      const pin = prompt('Enter admin PIN');
+      const correct = getComputedStyle(document.documentElement).getPropertyValue('--admin-pin').replace(/["']/g,'').trim();
+      if(pin===correct){
+        adminUnlocked = true; alert('Admin unlocked.');
+        $('#lockBtn').textContent = 'Lock Admin';
+        renderTable();
+      }else{
+        alert('Wrong PIN');
+      }
+    }
+  });
+
+  // CSV Export
+  $('#exportCsvBtn').addEventListener('click', ()=>{
+    const rows = loadAll();
+    if(!rows.length) return alert('No data to export.');
+    const header = ['ID','Name','Contact','Amount','Method','Datetime','UTR','Status','AdminNote','FileName','FileType','FileSize'];
+    const csv = [header.join(',')].concat(rows.map(r=>[
+      r.id, safe(r.name), safe(r.contact), r.amount, r.method, r.datetime, r.utr, r.status, safe(r.adminNote), safe(r.fileName), r.fileType, r.fileSize
+    ].map(x=>`"${String(x).replace(/"/g,'""')}"`).join(','))).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'shaheedcoin_proofs.csv'; a.click();
+    URL.revokeObjectURL(url);
+  });
+  function safe(s){ return (s??''); }
+
+  // Modals
+  function openModal(sel){ $(sel).classList.add('open'); }
+  function closeModal(sel){ $(sel).classList.remove('open'); }
+  $$('[data-close]').forEach(x=>x.addEventListener('click', ()=>closeModal(x.dataset.close)));
+
+  // Initial render
+  renderTable();
+</script>
 </body>
 </html>
