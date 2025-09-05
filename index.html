@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yog Anna Cafe Hostel - Rishikesh</title>
+    <title>Yog Anna Cafe Hostel - Premium Rishikesh Experience</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            --primary: #1a5f7a;
+            --secondary: #ffc107;
+            --accent: #d4af37;
+            --light: #f8f9fa;
+            --dark: #1e2a38;
             --saffron: #FF9933;
-            --white: #FFFFFF;
             --green: #138808;
-            --blue: #0066CC;
-            --dark: #1E3A3F;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
         }
         
         body {
-            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
@@ -31,14 +33,15 @@
         
         /* Header Styles */
         header {
-            background: linear-gradient(to right, rgba(30, 58, 63, 0.9), rgba(30, 58, 63, 0.7)), url('https://images.unsplash.com/photo-1605719125065-6f4dde8a8d2b?ixlib=rb-4.0.3') center/cover no-repeat;
+            background: linear-gradient(to right, rgba(26, 95, 122, 0.95), rgba(26, 95, 122, 0.85));
             color: white;
             padding: 1rem 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         .header-container {
@@ -52,7 +55,7 @@
         
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -60,7 +63,8 @@
         
         .logo i {
             margin-right: 10px;
-            color: var(--saffron);
+            color: var(--secondary);
+            animation: pulse 2s infinite;
         }
         
         .nav-links {
@@ -76,33 +80,51 @@
             color: white;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: all 0.3s;
             position: relative;
+            padding: 0.5rem 0;
         }
         
         .nav-links a:hover {
-            color: var(--saffron);
+            color: var(--secondary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--secondary);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
         }
         
         .book-btn {
-            background: var(--saffron);
+            background: var(--secondary);
             color: var(--dark);
             border: none;
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 1.8rem;
             border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
         }
         
         .book-btn:hover {
-            background: #e0892a;
-            transform: translateY(-2px);
+            background: #ffb300;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
         }
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1586122377340-e197c7e3eb96?ixlib=rb-4.0.3') center/cover no-repeat;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1586122377340-e197c7e3eb96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -110,47 +132,105 @@
             text-align: center;
             color: white;
             padding: 0 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.05"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" /><path d="M20,50 Q50,10 80,50 Q50,90 20,50 Z" stroke="white" stroke-width="1" fill="none" /></svg>');
+            animation: float 20s infinite linear;
         }
         
         .hero-content {
-            max-width: 800px;
+            max-width: 900px;
             margin-top: 60px;
+            z-index: 1;
+            animation: fadeIn 1.5s ease-out;
         }
         
         .hero h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.2;
         }
         
         .hero p {
             font-size: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .typed-text {
-            color: var(--saffron);
-            font-weight: bold;
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
         
-        /* Why Rishikesh Section */
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: #ffb300;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.5);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: var(--dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(to bottom, #ffffff, #f1f8ff);
         }
         
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
         
         .section-title h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.8rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
             position: relative;
             display: inline-block;
         }
@@ -158,65 +238,121 @@
         .section-title h2::after {
             content: '';
             position: absolute;
-            width: 50%;
-            height: 3px;
-            background: var(--saffron);
-            bottom: -10px;
-            left: 25%;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
         }
         
-        .activities-container {
+        .section-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+        }
+        
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
-        .activity-card {
+        .feature-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s;
+            text-align: center;
+            padding: 2.5rem 2rem;
             position: relative;
+            z-index: 1;
         }
         
-        .activity-card:hover {
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to bottom, var(--primary), #2a7a96);
+            z-index: -1;
+            transition: all 0.4s;
+            opacity: 0;
+        }
+        
+        .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            color: white;
         }
         
-        .activity-img {
-            height: 200px;
-            background-size: cover;
-            background-position: center;
+        .feature-card:hover::before {
+            height: 100%;
+            opacity: 1;
         }
         
-        .activity-content {
-            padding: 1.5rem;
+        .feature-card:hover h3,
+        .feature-card:hover p,
+        .feature-card:hover .feature-icon {
+            color: white;
         }
         
-        .activity-content h3 {
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
+        .feature-icon {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            transition: all 0.4s;
         }
         
-        .activity-content p {
-            color: #666;
+        .feature-card h3 {
+            font-size: 1.8rem;
             margin-bottom: 1rem;
+            color: var(--primary);
+            transition: all 0.4s;
+        }
+        
+        .feature-card p {
+            color: #666;
+            transition: all 0.4s;
         }
         
         /* Booking Section */
         .booking {
-            background: linear-gradient(to right, var(--dark), #2a4b52);
+            padding: 6rem 2rem;
+            background: linear-gradient(to right, var(--primary), #2a7a96);
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .booking::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.05"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" /><path d="M20,50 Q50,10 80,50 Q50,90 20,50 Z" stroke="white" stroke-width="1" fill="none" /></svg>');
+            animation: rotate 30s infinite linear;
+            pointer-events: none;
         }
         
         .booking-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
         
         .booking-content {
@@ -224,93 +360,172 @@
             min-width: 300px;
         }
         
+        .booking-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .booking-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .benefits {
+            list-style: none;
+            margin: 2rem 0;
+        }
+        
+        .benefits li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .benefits i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
         .booking-form {
             flex: 1;
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             min-width: 300px;
+            color: #333;
+        }
+        
+        .booking-form h3 {
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
         }
         
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: var(--dark);
-            font-weight: 600;
+            font-weight: 500;
         }
         
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 0.8rem;
+            padding: 1rem;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
         
-        /* WhatsApp Button */
-        .whatsapp-btn {
-            background: #25D366;
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.2);
+        }
+        
+        .submit-btn {
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            padding: 1.2rem;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: inline-flex;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+        
+        .submit-btn:hover {
+            background: #164c61;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(26, 95, 122, 0.3);
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+            background: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 4rem auto 0;
+        }
+        
+        .testimonial-card {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(26, 95, 122, 0.1);
+            font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+        
+        .testimonial-text {
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            color: #555;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 1rem;
+            overflow: hidden;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 1rem;
-            text-decoration: none;
-        }
-        
-        .whatsapp-btn i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-        
-        .whatsapp-btn:hover {
-            background: #128C7E;
-            transform: translateY(-2px);
-        }
-        
-        /* Target Audience */
-        .audience-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .audience-card {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .audience-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .audience-icon {
-            font-size: 3rem;
-            color: var(--saffron);
-            margin-bottom: 1rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
         }
         
         /* Footer */
         footer {
             background: var(--dark);
             color: white;
-            padding: 4rem 2rem 2rem;
-            text-align: center;
+            padding: 5rem 2rem 2rem;
         }
         
         .footer-container {
@@ -318,14 +533,14 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            gap: 3rem;
         }
         
         .footer-col h3 {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             position: relative;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.8rem;
         }
         
         .footer-col h3::after {
@@ -334,13 +549,32 @@
             left: 0;
             bottom: 0;
             width: 50px;
-            height: 2px;
-            background: var(--saffron);
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .footer-col p {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-info {
+            list-style: none;
+        }
+        
+        .contact-info li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-info i {
+            margin-right: 10px;
+            color: var(--secondary);
         }
         
         .social-links {
             display: flex;
-            justify-content: center;
             gap: 1rem;
             margin-top: 1.5rem;
         }
@@ -349,23 +583,49 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             color: white;
             transition: all 0.3s;
+            font-size: 1.2rem;
         }
         
         .social-links a:hover {
-            background: var(--saffron);
+            background: var(--secondary);
+            color: var(--dark);
             transform: translateY(-3px);
         }
         
         .copyright {
-            margin-top: 3rem;
+            text-align: center;
+            margin-top: 4rem;
             padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* Responsive Design */
@@ -386,15 +646,24 @@
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.8rem;
             }
             
             .hero p {
                 font-size: 1.2rem;
             }
             
+            .hero-btns {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
             .booking-container {
                 flex-direction: column;
+            }
+            
+            .section-title h2 {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -409,8 +678,8 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
+                <li><a href="#">Rooms</a></li>
                 <li><a href="#">Activities</a></li>
-                <li><a href="#">Accommodation</a></li>
                 <li><a href="#">Gallery</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
@@ -421,94 +690,102 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Welcome to Rishikesh</h1>
-            <p>Experience the spiritual heart of India - <span class="typed-text">Yog Nagri</span></p>
-            <p>Where the Ganges flows and mountains echo with mantras</p>
-            <button class="book-btn">Explore Activities</button>
+            <h1>Experience Spiritual Bliss in Rishikesh</h1>
+            <p>Discover the perfect blend of comfort, spirituality, and adventure at Yog Anna Cafe Hostel</p>
+            <div class="hero-btns">
+                <a href="#booking" class="btn btn-primary">Book Your Stay</a>
+                <a href="#features" class="btn btn-secondary">Explore Activities</a>
+            </div>
         </div>
     </section>
 
-    <!-- Why Rishikesh Section -->
-    <section class="section">
+    <!-- Features Section -->
+    <section class="features" id="features">
         <div class="section-title">
-            <h2>Why Visit Rishikesh?</h2>
-            <p>Discover the many experiences that make Rishikesh a unique destination</p>
+            <h2>Why Choose Our Hostel</h2>
+            <p>Experience the best of Rishikesh with our premium amenities and services</p>
         </div>
-        <div class="activities-container">
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>Yoga & Meditation</h3>
-                    <p>Find inner peace in the world capital of yoga with expert guides and serene ashrams.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-spa"></i>
                 </div>
+                <h3>Yoga & Meditation</h3>
+                <p>Daily yoga sessions with expert instructors in our dedicated meditation space overlooking the Ganges.</p>
             </div>
             
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1593115057322-e94b77572f20?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>River Rafting</h3>
-                    <p>Experience thrilling white water rafting in the holy Ganges river with professional guides.</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-utensils"></i>
                 </div>
+                <h3>Organic Cafe</h3>
+                <p>Enjoy healthy, delicious meals made from locally sourced organic ingredients at our in-house cafe.</p>
             </div>
             
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1586122377340-e197c7e3eb96?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>Spiritual Journeys</h3>
-                    <p>Visit ancient temples, attend Ganga Aarti, and experience India's rich spiritual heritage.</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-water"></i>
                 </div>
+                <h3>River View Rooms</h3>
+                <p>Wake up to breathtaking views of the Ganges from our specially designed river-facing accommodations.</p>
             </div>
             
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1599658880436-444c5a6f90ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>Adventure Sports</h3>
-                    <p>From bungee jumping to zip lining, get your adrenaline pumping with exciting activities.</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-hiking"></i>
                 </div>
+                <h3>Adventure Activities</h3>
+                <p>We organize rafting, trekking, and other adventure activities with professional guides and equipment.</p>
             </div>
             
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1542754585-cccfc5d6d2cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>Nature Treks</h3>
-                    <p>Explore the beautiful Himalayan foothills with guided treks and camping experiences.</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shuttle-van"></i>
                 </div>
+                <h3>Tour Arrangements</h3>
+                <p>Let us help you explore Rishikesh with customized tours to temples, ashrams, and spiritual sites.</p>
             </div>
             
-            <div class="activity-card">
-                <div class="activity-img" style="background-image: url('https://images.unsplash.com/photo-1536599424078-8a1385046ec6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
-                <div class="activity-content">
-                    <h3>Bike & Scooty Rentals</h3>
-                    <p>Explore Rishikesh at your own pace with our well-maintained bikes and scooties.</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-fire"></i>
                 </div>
+                <h3>Bonfire & Music</h3>
+                <p>Evening bonfire sessions with traditional music create a perfect atmosphere for connection and relaxation.</p>
             </div>
         </div>
     </section>
 
     <!-- Booking Section -->
-    <section class="section booking">
-        <div class="section-title">
-            <h2>Plan Your Stay at Yog Anna Cafe Hostel</h2>
-            <p>Book your perfect Rishikesh experience with us</p>
-        </div>
+    <section class="booking" id="booking">
         <div class="booking-container">
             <div class="booking-content">
-                <h3>Why Stay With Us?</h3>
-                <p>Yog Anna Cafe Hostel offers the perfect blend of comfort, spirituality, and adventure:</p>
-                <ul>
-                    <li>Comfortable accommodations with Ganga view</li>
-                    <li>Organic cafe with healthy meals</li>
-                    <li>Daily yoga and meditation sessions</li>
-                    <li>Guided tours and activity bookings</li>
-                    <li>24/7 customer support</li>
+                <h2>Book Your Spiritual Getaway</h2>
+                <p>Experience the magic of Rishikesh with our exclusive packages tailored for spiritual seekers and adventure enthusiasts alike.</p>
+                
+                <ul class="benefits">
+                    <li><i class="fas fa-check-circle"></i> Best location near Laxman Jhula</li>
+                    <li><i class="fas fa-check-circle"></i> Free yoga and meditation sessions</li>
+                    <li><i class="fas fa-check-circle"></i> Organic meals included in packages</li>
+                    <li><i class="fas fa-check-circle"></i> Adventure activity discounts</li>
+                    <li><i class="fas fa-check-circle"></i> 24/7 customer support</li>
                 </ul>
-                <a href="https://wa.me/919639432774?text=Hi,%20I'm%20interested%20in%20booking%20a%20stay%20at%20Yog%20Anna%20Cafe%20Hostel" class="whatsapp-btn">
-                    <i class="fab fa-whatsapp"></i> Book via WhatsApp
-                </a>
             </div>
             <div class="booking-form">
                 <h3>Check Availability</h3>
-                <form id="bookingForm">
+                <form id="bookNowForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" required placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">WhatsApp Number</label>
+                        <input type="tel" id="phone" required placeholder="Enter your WhatsApp number">
+                    </div>
                     <div class="form-group">
                         <label for="checkin">Check-In Date</label>
                         <input type="date" id="checkin" required>
@@ -520,6 +797,7 @@
                     <div class="form-group">
                         <label for="guests">Number of Guests</label>
                         <select id="guests" required>
+                            <option value="">Select guests</option>
                             <option value="1">1 Guest</option>
                             <option value="2">2 Guests</option>
                             <option value="3">3 Guests</option>
@@ -528,65 +806,53 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="room">Room Type</label>
-                        <select id="room" required>
-                            <option value="dorm">Dormitory Bed</option>
-                            <option value="private">Private Room</option>
-                            <option value="double">Double Room</option>
-                            <option value="family">Family Room</option>
-                        </select>
+                        <label for="message">Special Requests</label>
+                        <textarea id="message" rows="3" placeholder="Any special requests?"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">WhatsApp Number</label>
-                        <input type="tel" id="phone" required>
-                    </div>
-                    <button type="submit" class="book-btn">Check Availability</button>
+                    <button type="submit" class="submit-btn">Check Availability & Book</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <!-- Target Audience Section -->
-    <section class="section">
+    <!-- Testimonials -->
+    <section class="testimonials">
         <div class="section-title">
-            <h2>Perfect For Everyone</h2>
-            <p>Rishikesh offers something special for every type of traveler</p>
+            <h2>What Our Guests Say</h2>
+            <p>Authentic experiences from travelers who stayed at Yog Anna Cafe Hostel</p>
         </div>
-        <div class="audience-container">
-            <div class="audience-card">
-                <div class="audience-icon">
-                    <i class="fas fa-heart"></i>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">My stay at Yog Anna was transformative. The morning yoga sessions with the Ganges view were incredible. The staff felt like family!</p>
+                <div class="testimonial-author">
+                    <div class="author-img">A</div>
+                    <div>
+                        <h4>Ananya Sharma</h4>
+                        <p>From Delhi, India</p>
+                    </div>
                 </div>
-                <h3>Couples</h3>
-                <p>Romantic getaways with spiritual experiences and beautiful landscapes.</p>
             </div>
             
-            <div class="audience-card">
-                <div class="audience-icon">
-                    <i class="fas fa-hiking"></i>
+            <div class="testimonial-card">
+                <p class="testimonial-text">The perfect blend of adventure and spirituality! The hostel organized the best rafting experience, and the cafe food was delicious.</p>
+                <div class="testimonial-author">
+                    <div class="author-img">M</div>
+                    <div>
+                        <h4>Michael Johnson</h4>
+                        <p>From London, UK</p>
+                    </div>
                 </div>
-                <h3>Adventure Seekers</h3>
-                <p>Thrilling activities from rafting to bungee jumping for adrenaline junkies.</p>
             </div>
             
-            <div class="audience-card">
-                <div class="audience-icon">
-                    <i class="fas fa-hands-praying"></i>
+            <div class="testimonial-card">
+                <p class="testimonial-text">I extended my stay twice! The energy here is magical. Met amazing people, and the bonfire nights with music were unforgettable.</p>
+                <div class="testimonial-author">
+                    <div class="author-img">P</div>
+                    <div>
+                        <h4>Priya Patel</h4>
+                        <p>From Mumbai, India</p>
+                    </div>
                 </div>
-                <h3>Spiritual Seekers</h3>
-                <p>Deepen your practice with yoga, meditation and spiritual guidance.</p>
-            </div>
-            
-            <div class="audience-card">
-                <div class="audience-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>Families</h3>
-                <p>Create lasting memories with activities suitable for all age groups.</p>
             </div>
         </div>
     </section>
@@ -596,32 +862,34 @@
         <div class="footer-container">
             <div class="footer-col">
                 <h3>Yog Anna Cafe Hostel</h3>
-                <p>Your gateway to the spiritual and adventure capital of India. Experience the magic of Rishikesh with us.</p>
+                <p>Experience the true essence of Rishikesh with our blend of comfortable accommodation, spiritual practices, and adventure activities.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tripadvisor"></i></a>
                 </div>
             </div>
             
             <div class="footer-col">
-                <h3>Contact Us</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Near Laxman Jhula, Rishikesh, Uttarakhand</p>
-                <p><i class="fas fa-phone"></i> +91 9639432774</p>
-                <p><i class="fas fa-envelope"></i> info@yogannahostel.com</p>
-                <a href="https://wa.me/919639432774?text=Hi,%20I%20have%20a%20question%20about%20Yog%20Anna%20Cafe%20Hostel" class="whatsapp-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                    <i class="fab fa-whatsapp"></i> Message on WhatsApp
-                </a>
+                <h3>Contact Information</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-map-marker-alt"></i> Near Laxman Jhula, Rishikesh, Uttarakhand</li>
+                    <li><i class="fas fa-phone"></i> +91 9639432774</li>
+                    <li><i class="fas fa-envelope"></i> info@yogannahostel.com</li>
+                    <li><i class="fab fa-whatsapp"></i> WhatsApp: +91 9639432774</li>
+                </ul>
             </div>
             
             <div class="footer-col">
                 <h3>Quick Links</h3>
-                <p><a href="#">About Us</a></p>
-                <p><a href="#">Activities</a></p>
-                <p><a href="#">Accommodation</a></p>
-                <p><a href="#">Gallery</a></p>
-                <p><a href="#">Contact</a></p>
+                <ul class="contact-info">
+                    <li><a href="#"><i class="fas fa-angle-right"></i> About Us</a></li>
+                    <li><a href="#"><i class="fas fa-angle-right"></i> Rooms & Tariffs</a></li>
+                    <li><a href="#"><i class="fas fa-angle-right"></i> Activities</a></li>
+                    <li><a href="#"><i class="fas fa-angle-right"></i> Gallery</a></li>
+                    <li><a href="#"><i class="fas fa-angle-right"></i> Contact Us</a></li>
+                </ul>
             </div>
         </div>
         
@@ -631,64 +899,61 @@
     </footer>
 
     <script>
-        // Simple typewriter effect
-        const texts = ['Yog Nagri', 'Bhole Nath Ki Nagri', 'Adventure Capital', 'Spiritual Hub'];
-        let count = 0;
-        let index = 0;
-        let currentText = '';
-        let letter = '';
-        
-        function type() {
-            if (count === texts.length) {
-                count = 0;
-            }
-            currentText = texts[count];
-            letter = currentText.slice(0, ++index);
-            
-            document.querySelector('.typed-text').textContent = letter;
-            if (letter.length === currentText.length) {
-                count++;
-                index = 0;
-                setTimeout(type, 2000);
-            } else {
-                setTimeout(type, 150);
-            }
-        }
-        
         document.addEventListener('DOMContentLoaded', function() {
-            // Typewriter effect
-            type();
-            
-            // Date validation for booking form
-            const checkin = document.getElementById('checkin');
-            const checkout = document.getElementById('checkout');
+            // Set minimum date for check-in to today
             const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkin').min = today;
             
-            checkin.min = today;
-            
-            checkin.addEventListener('change', function() {
-                checkout.min = checkin.value;
+            // Update checkout min date when checkin changes
+            document.getElementById('checkin').addEventListener('change', function() {
+                document.getElementById('checkout').min = this.value;
             });
             
             // Form submission
-            const bookingForm = document.getElementById('bookingForm');
-            bookingForm.addEventListener('submit', function(e) {
+            document.getElementById('bookNowForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Get form values
                 const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value;
-                const checkinDate = document.getElementById('checkin').value;
-                const checkoutDate = document.getElementById('checkout').value;
+                const checkin = document.getElementById('checkin').value;
+                const checkout = document.getElementById('checkout').value;
                 const guests = document.getElementById('guests').value;
-                const room = document.getElementById('room').value;
+                const message = document.getElementById('message').value;
                 
                 // Create WhatsApp message
-                const message = `Hello! I would like to book a stay at Yog Anna Cafe Hostel.%0A%0AName: ${name}%0APhone: ${phone}%0ACheck-in: ${checkinDate}%0ACheck-out: ${checkoutDate}%0AGuests: ${guests}%0ARoom Type: ${room}`;
+                const whatsappMessage = `Hello! I would like to book a stay at Yog Anna Cafe Hostel.%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Check-in:* ${checkin}%0A*Check-out:* ${checkout}%0A*Guests:* ${guests}%0A*Message:* ${message || 'No special requests'}`;
                 
-                // Redirect to WhatsApp
-                window.location.href = `https://wa.me/919639432774?text=${message}`;
+                // Open WhatsApp
+                window.open(`https://wa.me/919639432774?text=${whatsappMessage}`, '_blank');
             });
+            
+            // Animate elements on scroll
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.feature-card, .testimonial-card');
+                
+                elements.forEach(element => {
+                    const position = element.getBoundingClientRect();
+                    
+                    // If element is in viewport
+                    if(position.top < window.innerHeight - 100) {
+                        element.style.opacity = 1;
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            // Initially set opacity to 0 for animated elements
+            document.querySelectorAll('.feature-card, .testimonial-card').forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            });
+            
+            // Run on scroll and initially
+            window.addEventListener('scroll', animateOnScroll);
+            animateOnScroll();
         });
     </script>
 </body>
